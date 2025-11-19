@@ -2,11 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader } from "../ui/card";
 import { CheckCircle2, Loader2 } from "lucide-react";
 
-// --- LOG LEAD local + serveur ---
+// ---- LOG LOCAL + QODDI ----
 const logLead = (leadData) => {
   console.log("📨 LEAD ENVOYÉ :", leadData);
 
-  // En parallèle → log serveur Qoddi (non bloquant)
   fetch("/log-lead", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -14,25 +13,24 @@ const logLead = (leadData) => {
   }).catch(() => {});
 };
 
-// --- GOOGLE SHEETS ---
-const GOOGLE_SHEETS_URL =
-  "https://script.google.com/macros/s/AKfycbzWty1MehSs8RxX8GPT1uygcwX6t24JuiyLDg1A8_iLaxievCRQ_5rBDtJg6z4DdRVn6A/exec";
-
+// ---- ENVOI AU SERVEUR QODDI ----
 const sendToServer = async (leadData) => {
   try {
-    const response = await fetch("http://oepnjcmswu.eu08.qoddiapp.com/leads_pac", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(leadData),
-    });
+    const response = await fetch(
+      "http://oepnjcmswu.eu08.qoddiapp.com/leads_pac",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(leadData),
+      }
+    );
 
     const json = await response.json();
-    console.log("📬 Réponse du serveur :", json);
+    console.log("📬 Réponse serveur :", json);
   } catch (error) {
     console.error("❌ Erreur serveur :", error);
   }
 };
-
 
 export default function EligibilityForm() {
   const [step, setStep] = useState(1);
@@ -56,7 +54,7 @@ export default function EligibilityForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
 
-  // ----- Hidden fields -----
+  // ---- Hidden Fields depuis URL ----
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
 
@@ -72,7 +70,7 @@ export default function EligibilityForm() {
     });
   }, []);
 
-  // ----- Questions -----
+  // ---- Questions ----
   const questions = [
     {
       id: 1,
@@ -108,7 +106,7 @@ export default function EligibilityForm() {
 
   const currentQuestion = questions[step - 1];
 
-  // ----- Submit -----
+  // ---- Submit ----
   const handleAnswer = async (value) => {
     const updated = { ...answers, [currentQuestion.key]: value };
     setAnswers(updated);
@@ -118,7 +116,7 @@ export default function EligibilityForm() {
       return;
     }
 
-    // Dernière question → on envoie
+    // Dernière question → envoi
     setIsSubmitting(true);
 
     const leadData = {
@@ -130,10 +128,10 @@ export default function EligibilityForm() {
       page: window.location.href,
     };
 
-    // Log en local + Qoddi
+    // Log
     logLead(leadData);
 
-    // Google Sheets
+    // Envoi backend
     sendToServer(leadData);
 
     setTimeout(() => {
@@ -143,8 +141,14 @@ export default function EligibilityForm() {
   };
 
   return (
-    <Card className="bg-white border-2 shadow-xl max-w-3xl mx-auto" style={{ borderColor: "#5CB000", borderRadius: 15 }}>
-      <CardHeader className="text-center p-4 md:p-6" style={{ backgroundColor: "#F8F9FA", borderRadius: "13px 13px 0 0" }}>
+    <Card
+      className="bg-white border-2 shadow-xl max-w-3xl mx-auto"
+      style={{ borderColor: "#5CB000", borderRadius: 15 }}
+    >
+      <CardHeader
+        className="text-center p-4 md:p-6"
+        style={{ backgroundColor: "#F8F9FA", borderRadius: "13px 13px 0 0" }}
+      >
         <div className="flex justify-center gap-3 mt-3">
           {[1, 2, 3].map((n) => (
             <div
@@ -152,7 +156,11 @@ export default function EligibilityForm() {
               className="w-8 h-8 md:w-12 md:h-12 rounded-full flex items-center justify-center text-white font-bold"
               style={{ backgroundColor: n <= step || isComplete ? "#5CB000" : "#E0E0E0" }}
             >
-              {n < step || isComplete ? <CheckCircle2 className="w-5 h-5" /> : n}
+              {n < step || isComplete ? (
+                <CheckCircle2 className="w-5 h-5" />
+              ) : (
+                n
+              )}
             </div>
           ))}
         </div>
@@ -169,7 +177,10 @@ export default function EligibilityForm() {
             </div>
           ) : (
             <>
-              <h3 className="text-xl font-bold text-center mb-6" style={{ color: "#094386" }}>
+              <h3
+                className="text-xl font-bold text-center mb-6"
+                style={{ color: "#094386" }}
+              >
                 {currentQuestion.question}
               </h3>
 
@@ -180,11 +191,20 @@ export default function EligibilityForm() {
                     onClick={() => handleAnswer(opt.value)}
                     className="p-4 border-2 rounded-lg text-left hover:shadow-lg transition"
                     style={{
-                      borderColor: answers[currentQuestion.key] === opt.value ? "#5CB000" : "#E0E0E0",
-                      backgroundColor: answers[currentQuestion.key] === opt.value ? "#F0F9E8" : "white",
+                      borderColor:
+                        answers[currentQuestion.key] === opt.value
+                          ? "#5CB000"
+                          : "#E0E0E0",
+                      backgroundColor:
+                        answers[currentQuestion.key] === opt.value
+                          ? "#F0F9E8"
+                          : "white",
                     }}
                   >
-                    <span className="text-lg font-semibold" style={{ color: "#094386" }}>
+                    <span
+                      className="text-lg font-semibold"
+                      style={{ color: "#094386" }}
+                    >
                       {opt.label} {opt.emoji}
                     </span>
                   </button>
@@ -194,14 +214,19 @@ export default function EligibilityForm() {
           )
         ) : (
           <div className="text-center py-10">
-            <CheckCircle2 className="w-20 h-20 mx-auto mb-4" style={{ color: "#5CB000" }} />
+            <CheckCircle2
+              className="w-20 h-20 mx-auto mb-4"
+              style={{ color: "#5CB000" }}
+            />
             <h3 className="text-3xl font-bold mb-3" style={{ color: "#5CB000" }}>
               Félicitations !
             </h3>
             <p className="text-xl" style={{ color: "#094386" }}>
               Vous êtes éligible aux aides de l'État.
             </p>
-            <p className="mt-4 text-sm text-gray-600">Un conseiller vous rappellera dans les prochaines 24h.</p>
+            <p className="mt-4 text-sm text-gray-600">
+              Un conseiller vous rappellera dans les prochaines 24h.
+            </p>
           </div>
         )}
       </CardContent>
