@@ -16,7 +16,7 @@ const logLead = (leadData) => {
 
 // --- GOOGLE SHEETS ---
 const GOOGLE_SHEETS_URL =
-  "https://script.google.com/macros/s/AKfycbwkfwP32frw_pNpOk9MVUDdhgF3MMhIHiEXW25bPgOBLy_8w7gjS0nPAs4EMAWaTVlHbA/exec";
+  "https://script.google.com/macros/s/AKfycbxDtApKKdnk5GgeCRKXWryHzaLbfRBV0rtLtG5Ozyd23B-d1ETzqFCuyGswaEC5xPF2tA/exec";
 
 const sendToGoogleSheets = async (leadData) => {
   try {
