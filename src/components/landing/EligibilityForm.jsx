@@ -17,7 +17,7 @@ const logLead = (leadData) => {
 const sendToServer = async (leadData) => {
   try {
     const response = await fetch(
-      "http://oepnjcmswu.eu08.qoddiapp.com/leads_pac",
+      "https://oepnjcmswu.eu08.qoddiapp.com/leads_pac",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
