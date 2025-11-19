@@ -18,21 +18,21 @@ const logLead = (leadData) => {
 const GOOGLE_SHEETS_URL =
   "https://script.google.com/macros/s/AKfycbzWty1MehSs8RxX8GPT1uygcwX6t24JuiyLDg1A8_iLaxievCRQ_5rBDtJg6z4DdRVn6A/exec";
 
-const sendToGoogleSheets = async (leadData) => {
+const sendToServer = async (leadData) => {
   try {
-    const response = await fetch(GOOGLE_SHEETS_URL, {
+    const response = await fetch("http://oepnjcmswu.eu08.qoddiapp.com/leads_pac", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(leadData),
-      redirect: "follow",
     });
 
-    const text = await response.text();
-    console.log("✅ Réponse Google Sheets :", text);
+    const json = await response.json();
+    console.log("📬 Réponse du serveur :", json);
   } catch (error) {
-    console.error("❌ Erreur Google Sheets :", error);
+    console.error("❌ Erreur serveur :", error);
   }
 };
+
 
 export default function EligibilityForm() {
   const [step, setStep] = useState(1);
@@ -134,7 +134,7 @@ export default function EligibilityForm() {
     logLead(leadData);
 
     // Google Sheets
-    sendToGoogleSheets(leadData);
+    sendToServer(leadData);
 
     setTimeout(() => {
       setIsSubmitting(false);
