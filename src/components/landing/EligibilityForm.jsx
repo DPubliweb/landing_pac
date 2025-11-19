@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { CheckCircle2, Loader2 } from "lucide-react";
 
+
 export default function EligibilityForm() {
   const [step, setStep] = useState(1);
   const [answers, setAnswers] = useState({
