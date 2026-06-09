@@ -36,7 +36,6 @@ export default function EligibilityForm() {
   const [step, setStep] = useState(1);
   const [answers, setAnswers] = useState({
     propertyType: "",
-    propertySize: "",
     heatingSystem: "",
   });
 
@@ -84,15 +83,6 @@ export default function EligibilityForm() {
     },
     {
       id: 2,
-      question: "Votre habitation fait-elle plus ou moins de 130 m² ?",
-      options: [
-        { value: "more_than_130", label: "Plus de 130 m²", emoji: "✅" },
-        { value: "less_than_130", label: "Moins de 130 m²", emoji: "✅" },
-      ],
-      key: "propertySize",
-    },
-    {
-      id: 3,
       question: "Quel est votre système de chauffage actuel ?",
       options: [
         { value: "gas", label: "Gaz", emoji: "✅" },
@@ -111,7 +101,7 @@ export default function EligibilityForm() {
     const updated = { ...answers, [currentQuestion.key]: value };
     setAnswers(updated);
 
-    if (step < 3) {
+    if (step < questions.length) {
       setTimeout(() => setStep(step + 1), 250);
       return;
     }
@@ -122,7 +112,8 @@ export default function EligibilityForm() {
     const leadData = {
       ...hiddenFields,
       property_type: updated.propertyType,
-      property_size: updated.propertySize,
+      property_size: "question_supprimee",
+      property_size_question_removed: true,
       heating_system: value,
       timestamp: new Date().toISOString(),
       page: window.location.href,
@@ -150,9 +141,12 @@ export default function EligibilityForm() {
         style={{ backgroundColor: "#F8F9FA", borderRadius: "13px 13px 0 0" }}
       >
         <div className="flex justify-center gap-3 mt-3">
-          {[1, 2, 3].map((n) => (
+          {questions.map((question, index) => {
+            const n = index + 1;
+
+            return (
             <div
-              key={n}
+              key={question.id}
               className="w-8 h-8 md:w-12 md:h-12 rounded-full flex items-center justify-center text-white font-bold"
               style={{ backgroundColor: n <= step || isComplete ? "#5CB000" : "#E0E0E0" }}
             >
@@ -162,7 +156,8 @@ export default function EligibilityForm() {
                 n
               )}
             </div>
-          ))}
+            );
+          })}
         </div>
       </CardHeader>
 
